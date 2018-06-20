@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Bitlab | Mirë se vini!</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+      function ShowLogin()
+      {
+          document.getElementById("Log").hidden=false;
+          document.getElementById("Register").hidden=true;
+      }
+      function ShowRegister()
+      {
+          document.getElementById("Log").hidden=true;
+          document.getElementById("Register").hidden=false;
+      }
+      
+      function fillDega()
+      {
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("dega").innerHTML = this.responseText;
+            }
+        };
+        xmlhttp.open("POST","filldega.php",true);
+        xmlhttp.send();
+      }
+  </script> 
+</head>
+<body onload="fillDega()">
+  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+  <div class="login" id="Log">
+   <h2 class="active">sign in</h2>
+   <h2 class="active" id="ShowRegister" onclick="ShowRegister()">sign up</h2>
+   <form action="login.php" method="POST">
+    <input type="text" class="text" name="username" id="username" required>
+    <span>përdoruesi</span>
+    <br> 
+    <br>
+    <input type="password" class="text" name="password" id="password" required>
+    <span>fjalëkalimi</span>
+    <br>
+    <input type="checkbox" id="checkbox-1-1" class="custom-checkbox" />
+    <label for="checkbox-1-1">Më mbaj të lidhur</label>  
+    <button class="signin" id="btnLogin" name="btnLogin">Identifikohu</button>
+    <hr>
+    <a href="#">Harruat fjalëkalimin?</a>
+   </form>
+</div>
+<div class="login" id="Register" hidden>
+  <h2 class="active" id="ShowLogin" onclick="ShowLogin()">sign in</h2>
+  <h2 class="active">sign up</h2>
+  <form id="regForm" action="signup.php" method="post">
+    <div class="tab">
+      <span id="sp1">Vendosni kredencialet tuaja:</span>
+      <input type="text" class="text" name="username" id="username" required>
+      <span>përdoruesi</span>
+      <br>  
+      <br>
+      <input type="password" class="text" name="password" id="password" required>
+      <span>fjalëkalimi</span> 
+      <br>
+      <br>
+      <input type="password" class="text" name="confirmPassword" id="confirmPassword" required>
+      <span>konfirmo fjalëkalimin</span>  
+      <br>
+      <hr id="h1">
+      <a href="#">Aktualisht jeni regjistruar?<i> Identifikohu!</i></a>
+    </div>
+    <div class="tab">
+      <span id="sp1">Informacion personal:</span>
+      <input type="text" class="text" name="emri" id="emri" required>
+      <span>emri</span>  
+      <br>
+      <input type="text" class="text" name="mbiemri" id="mbiemri" required>
+      <span>mbiemri</span>   
+      <br>
+      <input type="email" class="text" name="email" id="email" required>
+      <span>email</span>    
+      <br>
+      <input type="date" class="text" name="ditelindja" id="ditelindja"> <!--jo required-->
+      <span>ditëlindja</span>    
+      <br>
+    </div>
+    <div class="tab">
+      <span id="sp1">Jeni student në:</span>
+      <select name="dega" id="dega" class="text" style="color:black" required>
+        <option value=""></option>
+      </select>
+      <span>dega</span>
+      <br>
+      <br>
+      <input type="number" min="1" max="6" class="text" name="viti" id="viti" required>
+      <span>viti</span>
+    </div> 
+    <div style="overflow:auto;">
+      <div>
+        <button type="button" id="nextBtn" class="signin" onclick="nextPrev(1)">PAS >></button>
+        <button type="button" id="prevBtn" class="signin" onclick="nextPrev(-1)"><< PARA</button>        
+     </div>
+    </div>
+    <div style="text-align:center;">
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+    </div>
+ </form>
+</div>
+<script type="text/javascript">
+  var currentTab = 0; 
+showTab(currentTab);
+
+function showTab(n) {
+  var x = document.getElementsByClassName("tab");
+  x[n].style.display = "block";
+  if (n == 0) {
+    document.getElementById("prevBtn").style.display = "none";
+  } else {
+    document.getElementById("prevBtn").style.display = "inline";
+  }
+  if (n == (x.length - 1)) {
+    document.getElementById("nextBtn").innerHTML = "Regjistrohu";
+  } else {
+    document.getElementById("nextBtn").innerHTML = "PAS >>";
+  }
+  fixStepIndicator(n)
+}
+
+function nextPrev(n) {
+  var x = document.getElementsByClassName("tab");
+  if (n == 1 && !validateForm()) return false;
+  x[currentTab].style.display = "none";
+  currentTab = currentTab + n;
+  if (currentTab >= x.length) {
+    document.getElementById("regForm").submit();
+    return false;
+  }
+  showTab(currentTab);
+}
+
+function validateForm() {
+  var x, y, i, valid = true;
+  x = document.getElementsByClassName("tab");
+  y = x[currentTab].getElementsByTagName("input");
+  for (i = 0; i < y.length; i++) {
+    if (y[i].value == "") {
+      y[i].className += " invalid";
+      valid = false;
+    }
+  }
+  if (valid) {
+    document.getElementsByClassName("step")[currentTab].className += " finish";
+  }
+  return valid;
+}
+
+function fixStepIndicator(n) {
+  var i, x = document.getElementsByClassName("step");
+  for (i = 0; i < x.length; i++) {
+    x[i].className = x[i].className.replace(" active", "");
+  }
+  x[n].className += " active";
+}
+</script>
+<script  src="js/index.js"></script>
+</body>
+</html>
